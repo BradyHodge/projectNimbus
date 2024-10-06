@@ -2,7 +2,7 @@
 
 This is a Website that communicates with server backend that will communicate with a database to store user credentials and preferences. Below is a video demonstrating the functionality of this program.
 
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo Video](https://youtu.be/C-8J1NCUXxU)
 
 # Cloud Database
 
