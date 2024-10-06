@@ -9,20 +9,20 @@ POST http://localhost:8080/user
 content-type: application/json
 
 {
-    "userName": "Brady",
+    "userName": "Tom",
     "password": "password1",
     "location": "Rexburg,US"
 }
 
 ### update user
-PUT http://localhost:8080/user/6701d810e33a582d15465957 
+PUT http://localhost:8080/user/6701eb3001c24cc0f828d779 
 content-type: application/json
 
 {
-    "userName": "Brady",
+    "userName": "Tom",
     "password": "password2",
     "location": "Pocatello,US"
 }
 
 ### delete user
-DELETE http://localhost:8080/user/6701cf8152194ae29372b1de
+DELETE http://localhost:8080/user/6701eb3001c24cc0f828d779
