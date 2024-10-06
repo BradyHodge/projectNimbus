@@ -2,27 +2,27 @@
 GET http://localhost:8080/user
 
 ### get user by id
-GET http://localhost:8080/user/6701d810e33a582d15465957
+GET http://localhost:8080/user/6701ecdb01c24cc0f828d77c
 
 ### create user
 POST http://localhost:8080/user 
 content-type: application/json
 
 {
-    "userName": "Tom",
+    "userName": "Jane",
     "password": "password1",
-    "location": "Rexburg,US"
+    "location": "Dallas,US"
 }
 
 ### update user
-PUT http://localhost:8080/user/6701eb3001c24cc0f828d779 
+PUT http://localhost:8080/user/6701ecca01c24cc0f828d77b 
 content-type: application/json
 
 {
-    "userName": "Tom",
+    "userName": "Jane",
     "password": "password2",
     "location": "Pocatello,US"
 }
 
 ### delete user
-DELETE http://localhost:8080/user/6701eb3001c24cc0f828d779
+DELETE http://localhost:8080/user/6701ecca01c24cc0f828d77b
