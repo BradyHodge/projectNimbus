@@ -1,20 +1,33 @@
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('https://api.openweathermap.org/data/2.5/forecast?q=Rexburg,US&units=imperial&appid=')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        const weatherData = `
-          <p><b>Temperature:</b> ${data.list[0].main.temp}°F</p>
-          <p><b>Conditions:</b> ${data.list[0].weather[0].description}</p>
-        `;
-        document.getElementById('weatherData').innerHTML = weatherData;
-      })
-      .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-      });
-  });
-   
+async function sendRequest() {
+  const userId = document.getElementById('userId').value.trim();
+  const locationElement = document.getElementById('location');
+  const userElement = document.getElementById('user');
+  const temperatureElement = document.getElementById('temperature');
+  const resultDiv = document.getElementById('result');
+
+  if (!userId) {
+      resultDiv.textContent = 'Please enter a user ID.';
+      return;
+  }
+
+  try {
+      const response = await fetch(`http://localhost:8080/user/${userId}`);
+      const data = await response.json();
+      console.log(data.weather);
+      if (data.weather.location) {
+          locationElement.textContent = data.weather.location;
+      }
+      if (data.weather.user) {
+          userElement.textContent = data.weather.user;
+      }
+      if (data.weather.temperature) {
+          temperatureElement.textContent = data.weather.temperature;
+      }
+      
+  } catch (error) {
+      resultDiv.textContent = `Error: ${error.message}`;
+      locationElement.textContent = '';
+      userElement.textContent = '';
+      temperatureElement.textContent = '';
+  }
+}

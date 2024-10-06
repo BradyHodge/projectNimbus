@@ -14,12 +14,36 @@ const getSingle = async (req, res, next) => {
   const userId = new ObjectId(req.params.id);
   const db = await getDB();
   const result = await db.collection('user').find({ _id: userId });
-  result.toArray().then((lists) => {
+  
+  try {
+    const userData = await result.toArray();
+    const user = userData[0];
+    
+    const userLocation = user.location || 'Rexburg,US'; 
+    const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${userLocation}&units=imperial&appid=${process.env.WEATHER_API_KEY}`);
+    
+    if (!weatherResponse.ok) {
+      throw new Error('Weather API response was not ok');
+    }
+    
+    const weatherData = await weatherResponse.json();
+    
+    const responseData = {
+      weather: {
+        user: user.userName,
+        location: userLocation,
+        temperature: weatherData.list[0].main.temp,
+        conditions: weatherData.list[0].weather[0].description
+      }
+    };
+    
     res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(lists[0]);
-  });
+    res.status(200).json(responseData);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'An error occurred while fetching data' });
+  }
 };
-
 const createUser = async (User) => {
 
   try {
@@ -60,5 +84,6 @@ const deleteUser = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 
 module.exports = { getAll, getSingle, createUser, updateUser, deleteUser };
