@@ -1,6 +1,6 @@
 # Overview
 
-This is a Website that communicates with server backend that will communicate with a database to store user credentials and preferences. Below is a video demonstrating the functionality of this program.
+This is a Website that communicates with server backend which in turn communicates with a database to store user credentials and preferences. The website shows you the weather for your area based on the location you input when creating your account. Below is a video demonstrating the functionality of this program.
 
 [Software Demo Video](https://youtu.be/C-8J1NCUXxU)
 
