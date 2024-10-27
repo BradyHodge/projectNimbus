@@ -84,6 +84,29 @@ const deleteUser = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+const validateUserData = (req, res, next) => {
+  const { email, password, location } = req.body;
+  const errors = [];
+
+  if (!email) errors.push('Email is required');
+  if (!password) errors.push('Password is required');
+  if (!location) errors.push('Location is required');
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (email && !emailRegex.test(email)) {
+      errors.push('Invalid email format');
+  }
+
+  if (password && password.length < 8) {
+      errors.push('Password must be at least 8 characters long');
+  }
+
+  if (errors.length > 0) {
+      return res.status(400).json({ errors });
+  }
+
+  next();
+};
 
 
-module.exports = { getAll, getSingle, createUser, updateUser, deleteUser };
+module.exports = { getAll, getSingle, createUser, updateUser, deleteUser, validateUserData };
