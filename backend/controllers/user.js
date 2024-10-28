@@ -69,12 +69,11 @@ const createUser = async (userData) => {
 const updateUser = async (userId, updatedData) => {
   const db = await getDB();
   const objId = new ObjectId(userId);
-  delete updatedData._id;
   
   const result = await db.collection('user').updateOne(
       { _id: objId }, 
       { $set: updatedData }
-  );
+  ); 
   
   if (result.modifiedCount > 0) {
       return true;

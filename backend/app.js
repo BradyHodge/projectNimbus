@@ -17,14 +17,6 @@ app.use(cors({
 
 app.use(express.json());
 
-// app.use((req, res, next) => {
-//     console.log('Request Method:', req.method);
-//     console.log('Request Headers:', req.headers);
-//     console.log('Request Body:', req.body);
-//     next();
-// });
-
-
 app.use('/api-docs', swaggerUi.serve);
 app.get('/api-docs', (req, res, next) => {
     res.setHeader('Content-Type', 'text/html');
