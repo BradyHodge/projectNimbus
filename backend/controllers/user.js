@@ -98,7 +98,7 @@ const deleteUser = async (userId) => {
   }
 };
 const validateUserData = (req, res, next) => {
-  console.log('Validation middleware - Request body:', req.body);
+  ('Validation middleware - Request body:', req.body);
 
   if (!req.body || typeof req.body !== 'object') {
       return res.status(400).json({
