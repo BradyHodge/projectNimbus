@@ -85,24 +85,31 @@ const deleteUser = async (req, res) => {
   }
 };
 const validateUserData = (req, res, next) => {
-  const { email, password, location } = req.body;
+  const { userName, password, location } = req.body;
   const errors = [];
 
-  if (!email) errors.push('Email is required');
+  if (!userName) errors.push('Username is required');
   if (!password) errors.push('Password is required');
   if (!location) errors.push('Location is required');
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (email && !emailRegex.test(email)) {
-      errors.push('Invalid email format');
+  if (userName && (typeof userName !== 'string' || userName.length < 3 || userName.length > 30)) {
+      errors.push('Username must be between 3 and 30 characters');
   }
 
-  if (password && password.length < 8) {
-      errors.push('Password must be at least 8 characters long');
+  if (password && (typeof password !== 'string' || password.length < 6)) {
+      errors.push('Password must be at least 6 characters long');
+  }
+
+  if (location && (typeof location !== 'string' || location.length < 2)) {
+      errors.push('Location must be a valid string with at least 2 characters');
   }
 
   if (errors.length > 0) {
-      return res.status(400).json({ errors });
+      return res.status(400).json({
+          status: 'error',
+          message: 'Validation failed',
+          errors
+      });
   }
 
   next();

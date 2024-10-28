@@ -10,15 +10,22 @@ router.get('/:id', getSingle);
 router.post('/', validateUserData, async (req, res) => {
     try {
         const newUser = await createUser(req.body);
-        return res.status(201).json({ id: newUser });
+        return res.status(201).json({ 
+            status: 'success',
+            data: { id: newUser }
+        });
     } catch (err) {
-        console.error(err);
-        if (err.code === 'DUPLICATE_EMAIL') {
-            return res.status(409).json({ 
-                errors: ['Email already exists'] 
+        console.error('Error creating user:', err);
+        if (err.code === 'DUPLICATE_USERNAME') {
+            return res.status(409).json({
+                status: 'error',
+                message: 'Username already exists'
             });
         }
-        res.sendStatus(500);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Internal server error'
+        });
     }
 });
 
@@ -26,22 +33,51 @@ router.put('/:id', validateUserData, async (req, res) => {
     try {
         const updatedUser = await updateUser(req.params.id, req.body);
         if (!updatedUser) {
-            return res.status(404).json({ 
-                errors: ['User not found'] 
+            return res.status(404).json({
+                status: 'error',
+                message: 'User not found'
             });
         }
-        return res.status(200).json({ message: 'User updated successfully' });
+        return res.status(200).json({
+            status: 'success',
+            data: { user: updatedUser }
+        });
     } catch (err) {
-        console.error(err);
-        if (err.code === 'DUPLICATE_EMAIL') {
-            return res.status(409).json({ 
-                errors: ['Email already exists'] 
+        console.error('Error updating user:', err);
+        if (err.code === 'DUPLICATE_USERNAME') {
+            return res.status(409).json({
+                status: 'error',
+                message: 'Username already exists'
             });
         }
-        res.sendStatus(500);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Internal server error'
+        });
     }
 });
 
-router.delete('/:id', deleteUser);
+router.delete('/:id', async (req, res) => {
+    try {
+        const result = await deleteUser(req.params.id);
+        if (!result) {
+            return res.status(404).json({
+                status: 'error',
+                message: 'User not found'
+            });
+        }
+        return res.status(200).json({
+            status: 'success',
+            message: 'User deleted successfully'
+        });
+    } catch (err) {
+        console.error('Error deleting user:', err);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Internal server error'
+        });
+    }
+});
+
 
 module.exports = router;
