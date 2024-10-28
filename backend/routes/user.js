@@ -30,6 +30,9 @@ router.post('/', validateUserData, async (req, res) => {
 });
 
 router.put('/:id', validateUserData, async (req, res) => {
+    console.log('PUT request received:');
+    console.log('- params:', req.params);
+    console.log('- body:', req.body);
     try {
         const updatedUser = await updateUser(req.params.id, req.body);
         if (!updatedUser) {

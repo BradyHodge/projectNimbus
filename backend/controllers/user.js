@@ -44,47 +44,70 @@ const getSingle = async (req, res, next) => {
     res.status(500).json({ error: 'An error occurred while fetching data' });
   }
 };
-const createUser = async (User) => {
-
+const createUser = async (userData) => {
   try {
-    const db = await getDB();
-    const result = await db.collection('user').insertOne(User);
-    return result.insertedId;
+      const db = await getDB();
+      
+      const existingUser = await db.collection('user').findOne({ 
+          userName: userData.userName 
+      });
+      
+      if (existingUser) {
+          const error = new Error('Username already exists');
+          error.code = 'DUPLICATE_USERNAME';
+          throw error;
+      }
+
+      const result = await db.collection('user').insertOne(userData);
+      return result.insertedId;
   } catch (err) {
-    console.error(err);
-    throw err;
+      console.error('Error in createUser:', err);
+      throw err;
   }
 };
 
-const updateUser = async (req, res) => {
-  const userId = new ObjectId(req.params.id);
+const updateUser = async (userId, updatedData) => {
   const db = await getDB();
-  const updatedData = req.body;
+  const objId = new ObjectId(userId);
   delete updatedData._id;
-  const result = await db.collection('user').updateOne({ _id: userId }, { $set: updatedData });
+  
+  const result = await db.collection('user').updateOne(
+      { _id: objId }, 
+      { $set: updatedData }
+  );
+  
   if (result.modifiedCount > 0) {
-    res.status(204).send();
-  } else {
-    res.status(404).json({ error: 'User not found' });
+      return true;
   }
+  return false;
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (userId) => {
   try {
-    const userId = new ObjectId(req.params.id);
-    const db = await getDB();
-    const result = await db.collection('user').deleteOne({ _id: userId });
-    if (result.deletedCount > 0) {
-      res.status(200).json({});
-    } else {
-      res.status(404).json({ error: 'User not found' });
-    }
+      const db = await getDB();
+      const objId = new ObjectId(userId);
+      
+      const result = await db.collection('user').deleteOne({ 
+          _id: objId 
+      });
+      
+      return result.deletedCount > 0;
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+      console.error('Error in deleteUser:', err);
+      throw err;
   }
 };
 const validateUserData = (req, res, next) => {
+  console.log('Validation middleware - Request body:', req.body);
+
+  if (!req.body || typeof req.body !== 'object') {
+      return res.status(400).json({
+          status: 'error',
+          message: 'Invalid request body',
+          errors: ['Request body is missing or invalid']
+      });
+  }
+
   const { userName, password, location } = req.body;
   const errors = [];
 
