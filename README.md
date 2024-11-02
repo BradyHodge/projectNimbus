@@ -1,25 +1,18 @@
-# Overview
+# Project Nimbus
 
-This is a Website that communicates with server backend which in turn communicates with a database to store user credentials and preferences. The website shows you the weather for your area based on the location you input when creating your account. Below is a video demonstrating the functionality of this program.
+This is a full stack app that gets wether information based on a user's location and displays as per the user's set preferences. I am creating this app to lean how to make implement server backend code and user authentication.
 
 [Software Demo Video](https://youtu.be/C-8J1NCUXxU)
 
-# Cloud Database
+## Cloud Database
 
 I am using Mongodb as the database that stores user credentials. Right now it stores username, password, and location.
 
-# Development Environment
+## Development Environment
 
 The backend is built with node.js and the front end is build with static html and javascript.
 
-# Useful Websites
-
-These are the main web resources that I used:
-
-- [W3 Schools](https://www.w3schools.com/nodejs/nodejs_mongodb.asp)
-- [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction)
-
-# Future Work
+## Future Work
 
 Things that still need to be done:
 

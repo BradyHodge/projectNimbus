@@ -8,6 +8,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const path = require('path');
 const userRoutes  = require('./routes/user');
+const uiRoutes = require('./routes/ui')
 
 app.use(cors({
     origin: '*',
@@ -23,6 +24,7 @@ app.get('/api-docs', (req, res, next) => {
     swaggerUi.setup(swaggerDocument)(req, res, next);
 });
 app.use('/user', userRoutes);
+app.use('/', uiRoutes)
 
 
 connectDB(() => {
