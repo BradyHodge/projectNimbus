@@ -4,7 +4,7 @@ const doc = {
     title: 'My API',
     description: 'Users API',
   },
-  host: 'https://nimbus.bradyhodge.dev',
+  host: 'nimbus.bradyhodge.dev',
   schemes: ['https'],
 };
 const outputFile = './swagger.json';

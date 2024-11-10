@@ -5,7 +5,7 @@
     "description": "Users API",
     "version": "1.0.0"
   },
-  "host": "https://nimbus.bradyhodge.dev",
+  "host": "nimbus.bradyhodge.dev",
   "basePath": "/",
   "schemes": [
     "https"
