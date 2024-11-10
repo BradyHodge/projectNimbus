@@ -8,54 +8,90 @@ const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 
 async function loadSignInPage(req, res) {
-    res.render('signin', { title: 'Sign In with GitHub' });
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=user:email`;
+    res.render('signin', { 
+        title: 'Sign In To Continue',
+        githubAuthUrl 
+    });
 }
 
 async function auth(req, res) {
     const { code } = req.query;
+    
+    if (!code) {
+        console.error('No code received from GitHub');
+        return res.status(400).send('No code received from GitHub');
+    }
+
+    console.log('Received GitHub code:', code);
+    console.log('Using CLIENT_ID:', CLIENT_ID);
+    console.log('Using REDIRECT_URI:', REDIRECT_URI);
 
     try {
-        const tokenResponse = await axios.post(
-            'https://github.com/login/oauth/access_token',
-            new URLSearchParams({
+        const tokenResponse = await axios({
+            method: 'post',
+            url: 'https://github.com/login/oauth/access_token',
+            headers: {
+                accept: 'application/json',
+                'content-type': 'application/json'
+            },
+            data: {
                 client_id: CLIENT_ID,
                 client_secret: CLIENT_SECRET,
-                code,
+                code: code,
                 redirect_uri: REDIRECT_URI
-            }),
-            {
-                headers: { Accept: 'application/json' }
             }
-        );
+        });
 
-        const { access_token } = tokenResponse.data;
+        console.log('Token response:', tokenResponse.data);
+
+        const access_token = tokenResponse.data.access_token;
 
         if (!access_token) {
-            throw new Error("Failed to retrieve access token from GitHub");
+            console.error('No access token in response:', tokenResponse.data);
+            throw new Error('No access token received from GitHub');
         }
 
-        const userInfoResponse = await axios.get('https://api.github.com/user', {
-            headers: { Authorization: `Bearer ${access_token}` }
+        const userInfoResponse = await axios({
+            method: 'get',
+            url: 'https://api.github.com/user',
+            headers: {
+                Authorization: `Bearer ${access_token}`,
+                Accept: 'application/json'
+            }
         });
 
         const userInfo = userInfoResponse.data;
+        console.log('User info received:', userInfo);
 
         req.session.user = {
             id: userInfo.id,
-            name: userInfo.name,
+            name: userInfo.name || userInfo.login,
             email: userInfo.email
         };
 
         res.redirect('/home');
     } catch (error) {
-        console.error('Authentication error:', error.message);
+        console.error('Detailed authentication error:', {
+            message: error.message,
+            response: error.response ? {
+                status: error.response.status,
+                data: error.response.data
+            } : 'No response',
+            config: error.config ? {
+                url: error.config.url,
+                method: error.config.method,
+                headers: error.config.headers
+            } : 'No config'
+        });
+
         res.status(500).send(`Authentication failed: ${error.message}`);
     }
 }
 
 async function loadHomePage(req, res) {
     if (!req.session.user) {
-        return res.redirect('/signin');
+        return res.redirect('/');
     }
 
     res.render('home', {
@@ -64,46 +100,6 @@ async function loadHomePage(req, res) {
     });
 }
 
-async function githubCallback(req, res) {
-    const { code } = req.query;
+// Remove the separate githubCallback function since it's redundant with auth
 
-    try {
-        const tokenResponse = await axios.post(
-            'https://github.com/login/oauth/access_token',
-            new URLSearchParams({
-                client_id: CLIENT_ID,
-                client_secret: CLIENT_SECRET,
-                code,
-                redirect_uri: REDIRECT_URI
-            }),
-            {
-                headers: { Accept: 'application/json' }
-            }
-        );
-
-        const accessToken = tokenResponse.data.access_token;
-        
-        if (!accessToken) {
-            throw new Error("Failed to retrieve access token from GitHub");
-        }
-
-        const userInfoResponse = await axios.get('https://api.github.com/user', {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        });
-
-        const userInfo = userInfoResponse.data;
-
-        req.session.user = {
-            id: userInfo.id,
-            name: userInfo.name,
-            email: userInfo.email,
-        };
-
-        res.redirect('/home');
-    } catch (error) {
-        console.error('GitHub authentication error:', error.message);
-        res.status(500).send(`Authentication failed: ${error.message}`);
-    }
-}
-
-module.exports = { loadSignInPage, auth, loadHomePage, githubCallback };
+module.exports = { loadSignInPage, auth, loadHomePage };

@@ -28,7 +28,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
-
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api-docs', swaggerUi.serve);
 app.get('/api-docs', (req, res, next) => {
     res.setHeader('Content-Type', 'text/html');
