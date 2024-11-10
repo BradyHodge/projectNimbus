@@ -1,14 +1,19 @@
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 const cors = require('cors');
-app.use(express.json());
+const session = require('express-session');
+require('dotenv').config();
 
 const { connectDB } = require('./db/connect');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const path = require('path');
-const userRoutes  = require('./routes/user');
-const uiRoutes = require('./routes/ui')
+const userRoutes = require('./routes/user');
+const uiRoutes = require('./routes/ui');
+
+app.set('view engine', 'ejs'); 
+app.set('views', path.join(__dirname, 'views')); 
+
 
 app.use(cors({
     origin: '*',
@@ -18,14 +23,20 @@ app.use(cors({
 
 app.use(express.json());
 
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true
+}));
+
 app.use('/api-docs', swaggerUi.serve);
 app.get('/api-docs', (req, res, next) => {
     res.setHeader('Content-Type', 'text/html');
     swaggerUi.setup(swaggerDocument)(req, res, next);
 });
-app.use('/user', userRoutes);
-app.use('/', uiRoutes)
 
+app.use('/user', userRoutes);
+app.use('/', uiRoutes);
 
 connectDB(() => {
     app.listen(8080, function() {
