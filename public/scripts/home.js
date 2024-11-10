@@ -11,7 +11,7 @@ async function sendRequest() {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/user/${userId}`);
+        const response = await fetch(`https://nimbus.bradyhodge.dev/user/${userId}`);
         const data = await response.json();
         console.log(data.weather);
         if (data.weather.location) {
